@@ -1,3 +1,14 @@
+INDEX:
+1. BINARY TREE
+2. TREAP
+3. BINARY SEARCH TREE
+4. AVL TREES
+5. BINARY HEAP
+6.
+7.
+
+---------------------------------------------------------------------------------------------------
+
 BINARY TREE:
 
 Node:
