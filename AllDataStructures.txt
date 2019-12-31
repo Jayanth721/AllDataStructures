@@ -4,7 +4,7 @@ INDEX:
 3. BINARY SEARCH TREE
 4. AVL TREES
 5. BINARY HEAP
-6.
+6. SKIP LISTS
 7.
 
 ---------------------------------------------------------------------------------------------------
@@ -931,4 +931,117 @@ void MinHeap::MinHeapify(int i)
         swap(&harr[i], &harr[smallest]); 
         MinHeapify(smallest); 
     } 
-} 
+}
+
+=======================================================================================================================
+
+SKIP LISTS:
+
+1. SkiplistSSet
+
+struct Node
+{
+  T x;
+  int height;
+  Node *next[];
+};
+
+Node* findPredNode(T x)
+{
+  Node *u = sentinal;
+  int r = h; //height of the skiplist
+  
+  while (r >= 0)
+  {
+    while (u->next[r] != NULL && compare(u->next[r]->x, x) < 0) //while we are smaller than x.
+    {
+      u = u->next[r]; //go right in list r
+    }
+    r--; //go down into list r-1
+  }
+  return u;
+}
+
+T find(T x)
+{
+  Node *u = findPredNode(x);
+  return u->next[0] == NULL ? NULL:u->next[0]->x;
+}
+
+int pickHeight()
+{
+  int z = rand();
+  int k = 0;
+  int m = 1;
+  while((z & m))
+  {
+    k++;
+    m <<= 1;
+  }
+  return k;
+}
+
+bool add(T x)
+{
+  Node *u = sentinal;
+  int r = h;
+  int comp = 0;
+  while(r>=0)
+  {
+    while(u->next[r] != NULL && (comp = compare(u->next[r]->x, x)) < 0)
+    {
+      u = u->next[r];
+    }
+    if(u->next[r] != NULL && comp == 0)
+    {
+      return false; // Item already exist
+    }
+    stack[r--] = u; //going down, store u
+  }
+  Node *w = newNode(x, pickHeight());
+  while(h < w->height)
+  {
+    stack[++h] = sentinal; //height increased
+  }
+  
+  for(int i=0; i <= w->height; ++i)
+  {
+    w->next[i] = stack[i]->next[i];
+    stack[i]->next = w;
+  }
+  n++;
+  return true;
+}
+
+bool remove(T x)
+{
+  bool removed = false;
+  Node *u=sentinal, *del;
+  int comp=0;
+  while(r>=0)
+  {
+    while(u->next[r] != NULL && (comp=compare(u->next[r]->x, x)) < 0)
+    {
+      u =u->next[r];
+    }
+    
+    if (u->next[r] != NULL && comp == 0)
+    {
+      //found one of the prev node which is connected to node to be deleted
+      removed = true;
+      del = u->next[r];
+      u->next[r] = u->next[r]->next[r];
+      if (u==sentinal && u->next[r]==NULL)
+      {
+        h--; //skiplist height has gone down
+      }
+    }
+    r--;
+  }
+  if(removed)
+  {
+    delete del;
+    n--;
+  }
+  return removed;
+}
